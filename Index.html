@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SISGEI Mini Mercado “Súper Único” – Inicio</title>
+
+  <!-- Fuente limpia y legible -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Paleta “mini-mercado” */
+      --bg: #f6f7f2;           /* fondo claro */
+      --card: #ffffff;         /* tarjetas */
+      --ink: #17261a;          /* texto principal */
+      --muted: #5f6f65;        /* texto secundario */
+      --primary: #2e7d32;      /* verde hoja */
+      --primary-600: #256a29;  /* hover */
+      --accent: #ffb300;       /* acento (etiquetas/ofertas) */
+      --lime: #8bc34a;         /* detalles */
+      --danger: #d32f2f;       /* errores */
+      --ring: #9ad17f;         /* foco accesible */
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(20, 48, 28, .12);
+    }
+
+    /* Reset ligero y tipografía */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 600px at 15% -10%, #e9f4e5 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 95% 10%, #fff4d8 0%, transparent 55%),
+                  var(--bg);
+      display: grid;
+      place-items: center;
+    }
+
+    .wrap{
+      width: min(92vw, 980px);
+      display: grid;
+      gap: 28px;
+      align-items: center;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 880px){
+      .wrap{ grid-template-columns: 1.1fr .9fr; }
+    }
+
+    .brand{
+      display: grid;
+      gap: 14px;
+      text-align: center;
+    }
+
+    @media (min-width: 880px){
+      .brand{ text-align: left; }
+    }
+
+    .logo{
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      font-size: clamp(22px, 2.2vw + 12px, 32px);
+    }
+
+    .logo-badge{
+      width: 46px; height: 46px; border-radius: 12px;
+      background:
+        conic-gradient(from 160deg at 70% 30%, var(--accent), #ffd76a 35%, #fff6cf 35%, #fff6cf 65%, var(--lime) 65%, #4caf50);
+      display: grid; place-items: center;
+      box-shadow: 0 6px 14px rgba(255, 179, 0, .25);
+    }
+
+    .logo svg{ width: 26px; height: 26px; }
+
+    .title{
+      font-size: clamp(22px, 1.6vw + 14px, 28px);
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .subtitle{
+      font-size: clamp(14px, .6vw + 12px, 16px);
+      color: var(--muted);
+      max-width: 48ch;
+    }
+
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .form{
+      display: grid;
+      gap: 16px;
+    }
+
+    .legend{
+      font-weight: 700;
+      letter-spacing: .3px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .control{
+      display: grid;
+      gap: 8px;
+    }
+
+    label{
+      font-size: 12px;
+      letter-spacing: .2px;
+      color: var(--muted);
+    }
+
+    .input{
+      width: 100%;
+      border: 1.5px solid #dfe5df;
+      background: #f9fbf7;
+      padding: 14px 14px;
+      font-size: 16px;
+      border-radius: 12px;
+      outline: none;
+      transition: border .2s, box-shadow .2s, background .2s;
+    }
+    .input::placeholder{ color: #9aa79f; }
+    .input:focus{
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--ring);
+      background: #fff;
+    }
+
+    .actions{
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .btn{
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 700;
+      padding: 14px 18px;
+      border-radius: 14px;
+      text-decoration: none;
+      transition: transform .04s ease, filter .15s ease, background .2s ease;
+      will-change: transform;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary{
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%);
+      color: #fff;
+    }
+    .btn-primary:hover{ filter: brightness(1.04); }
+
+    .btn-secondary{
+      background: #eef7e9;
+      color: var(--primary);
+      border: 1.5px solid #d7ecd2;
+    }
+    .btn-secondary:hover{ filter: brightness(1.03); }
+
+    .divider{
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 2px 0;
+    }
+    .divider:before, .divider:after{
+      content: "";
+      height: 1px;
+      background: #dfe5df;
+    }
+
+    .helper{
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; flex-wrap: wrap; margin-top: 6px;
+    }
+
+    .link{
+      color: var(--primary-600);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link:hover{ text-decoration: underline; }
+
+    .error{
+      display:none;
+      background: #fdecec;
+      border: 1px solid #f8b4b4;
+      color: var(--danger);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    /* Pequeños detalles de branding en el borde de la tarjeta */
+    .card:after{
+      content:"";
+      position: absolute;
+      inset: -2px -2px auto auto;
+      width: 78px; height: 78px;
+      background:
+       radial-gradient(30px 30px at 22px 22px, rgba(139,195,74,.35), transparent 60%),
+       radial-gradient(26px 26px at 52px 18px, rgba(255,179,0,.35), transparent 60%);
+      border-top-right-radius: var(--radius);
+      pointer-events:none;
+      filter: blur(.3px);
+      opacity:.5;
+    }
+
+    /* Dark mode opcional (por si tu app luego lo usa) */
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #0f1510;
+        --card: #111a12;
+        --ink: #e9f2ea;
+        --muted: #a9b7ad;
+        --ring: rgba(138, 199, 101, .35);
+        --shadow: 0 10px 30px rgba(0,0,0,.45);
+      }
+      .input{ background:#0f1911; border-color:#2a3b2e; color:var(--ink); }
+      .divider:before,.divider:after{ background:#273427; }
+      .btn-secondary{ background:#132112; border-color:#294126; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="wrap">
+    <!-- Lado de marca / mensajes -->
+    <section class="brand" aria-label="Información de marca">
+      <div class="logo" aria-label="Mini Mercado Súper Único">
+        <span class="logo-badge" aria-hidden="true">
+          <!-- Icono carrito simple -->
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6h14l-2 8H8L6 4H3" stroke="#1b5e20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="20" r="1.6" fill="#1b5e20"/>
+            <circle cx="17" cy="20" r="1.6" fill="#1b5e20"/>
+          </svg>
+        </span>
+        <span>Sistema de Gestión de Inventario</span>
+      </div>
+
+      <h1 class="title">Mini Mercado “Súper Único”</h1>
+      <p class="subtitle">
+        Control de existencias, compras y ventas en un solo lugar. Inicia sesión
+        para continuar.
+      </p>
+    </section>
+
+    <!-- Tarjeta de login -->
+    <section class="card" style="position:relative" aria-labelledby="legend-login">
+      <form class="form" id="loginForm" novalidate>
+        <div class="legend" id="legend-login">Ingresar datos de usuario</div>
+
+        <div role="alert" class="error" id="errorBox">Usuario o contraseña inválidos.</div>
+
+        <div class="control">
+          <label for="usuario">Usuario</label>
+          <input class="input" id="usuario" name="usuario" type="text" inputmode="latin"
+                 placeholder="Digite usuario" autocomplete="username" required />
+        </div>
+
+        <div class="control">
+          <label for="password">Contraseña</label>
+          <input class="input" id="password" name="password" type="password"
+                 placeholder="Digite contraseña" autocomplete="current-password" required minlength="4" />
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" id="btnEntrar">Entrar</button>
+          <div class="divider">o</div>
+          <a class="btn btn-secondary" href="#crear-cuenta" id="btnCrearCuenta">Crear cuenta</a>
+          <div class="helper">
+            <a class="link" href="#recuperar">¿Olvidaste tu contraseña?</a>
+            <span style="font-size:12px;color:var(--muted)">v0.1 (pantalla de inicio)</span>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorBox');
+  
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuario = form.usuario.value.trim();
+      const password = form.password.value.trim();
+  
+      try {
+        const resp = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, password })
+        });
+  
+        const data = await resp.json();
+        if (data.ok) {
+          window.location.href = data.redirect || "/dashboard";
+        } else {
+          errorBox.style.display = "block";
+          errorBox.textContent = data.error || "Error al iniciar sesión.";
+        }
+      } catch (err) {
+        errorBox.style.display = "block";
+        errorBox.textContent = "No se pudo conectar con el servidor.";
+      }
+    });
+  </script>
+</body>
+</html>
