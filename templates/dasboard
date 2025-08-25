@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dashboard – Mini Mercado “Súper Único”</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f6f7f2; --card:#ffffff; --ink:#17261a; --muted:#5f6f65;
+      --primary:#2e7d32; --primary-600:#256a29; --accent:#ffb300; --lime:#8bc34a;
+      --ring:#9ad17f; --danger:#d32f2f; --radius:18px; --shadow:0 10px 30px rgba(20,48,28,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      display:grid; grid-template-columns:260px 1fr; min-height:100vh;
+    }
+    /* SIDEBAR */
+    aside{
+  background:#ffffff;
+  border-right:1px solid #e7ece7;
+  padding:20px 16px;
+  display:flex; flex-direction:column; gap:18px;
+  min-height:100vh;
+}
+.brand{
+  display:flex; align-items:center; gap:10px; font-weight:800; color:#17261a;
+  padding:6px 8px; border-radius:10px; background:#f5faf3;
+}
+.menu-section{
+  margin-top:6px;
+}
+.menu-title{
+  font-size:12px; letter-spacing:.8px; font-weight:800; color:#6b7280;
+  text-transform:uppercase; margin:12px 8px 6px;
+}
+.menu-list{
+  display:flex; flex-direction:column; gap:4px; margin:0; padding:0;
+}
+.menu-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 10px; border-radius:10px; color:#374151; text-decoration:none;
+  font-weight:600;
+}
+.menu-item:hover{ background:#f4f8f3; }
+.menu-item .icon{ width:18px; height:18px; color:#6b7280; }
+
+/* separador fino */
+.hr{ height:1px; background:#eef2ee; margin:14px 0; border:0 }
+
+/* Perfil abajo */
+.profile{
+  margin-top:auto; padding:12px 10px; border-radius:12px; background:#f7faf7;
+  display:flex; align-items:center; gap:10px; color:#374151;
+}
+.avatar{
+  width:28px; height:28px; border-radius:999px; background:#e8edff; display:grid; place-items:center;
+  font-weight:800; color:#3b4bcc;
+}
+.profile small{ color:#6b7280; display:block; margin-top:2px }
+
+    /* MAIN */
+    main{ padding:24px; background:
+      radial-gradient(1200px 600px at 15% -10%, #e9f4e5 0%, transparent 60%),
+      radial-gradient(1000px 500px at 95% 10%, #fff4d8 0%, transparent 55%),
+      var(--bg);
+    }
+    header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:24px }
+    .user form{ margin:0 }
+
+    .kpis{ display:grid; gap:18px; grid-template-columns:repeat(1,1fr) }
+    @media (min-width:760px){ .kpis{ grid-template-columns:repeat(3,1fr) } }
+
+    .card{
+      background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:18px 18px 16px;
+    }
+    .kpi h5{ margin:0 0 8px 0; font-size:14px; color:var(--muted); }
+    .kpi .big{ font-size:34px; font-weight:800; line-height:1.1; margin-bottom:6px }
+    .kpi .muted{ font-size:12px; color:var(--muted) }
+    .kpi .subvalue{ margin-top:10px; font-weight:700; }
+
+    .grid-1{ display:grid; gap:20px; grid-template-columns:1fr }
+
+    table{ width:100%; border-collapse: collapse; font-size:14px }
+    thead th{ text-align:left; font-size:12px; color:var(--muted); font-weight:700;
+              border-bottom:1px solid #e2e8e2; padding:10px 8px }
+    tbody td{ border-bottom:1px solid #eef1ee; padding:12px 8px; vertical-align:middle }
+    tbody tr:hover{ background:#f7fbf6 }
+    .idcol{ color:#6b7280; width:72px }
+    .stock{ font-weight:700 }
+    .status svg.ok{ color:#2e7d32 }
+    .status svg.warn{ color:#d32f2f }
+    .date{ color:#6b7280; white-space:nowrap }
+    .pill{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+           background:#eef7e9; color:#1b5e20; border:1px solid #d7ecd2; font-weight:700; font-size:12px }
+  </style>
+</head>
+<!-- Sprite de iconos -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- ícono de suma -->
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- ícono clipboard -->
+  <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <rect x="9" y="2" width="6" height="4" rx="1" stroke-width="2"/>
+    <rect x="4" y="4" width="16" height="18" rx="2" stroke-width="2"/>
+  </symbol>
+
+  <!-- ícono prohibido -->
+  <symbol id="i-ban" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <circle cx="12" cy="12" r="9" stroke-width="2"/>
+    <path d="M5 19L19 5" stroke-width="2"/>
+  </symbol>
+
+  <!-- ícono de caja -->
+  <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="2"/>
+    <path d="M3.27 7.96L12 13l8.73-5.04" stroke-width="2"/>
+  </symbol>
+
+  <!-- ícono check -->
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M20 6L9 17l-5-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+  
+<body>
+  <!-- Sidebar -->
+  <aside>
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1b5e20" stroke-width="2">
+        <path d="M6 6h14l-2 8H8L6 4H3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="9" cy="20" r="1.6" fill="#1b5e20"/>
+        <circle cx="17" cy="20" r="1.6" fill="#1b5e20"/>
+      </svg>
+      Súper Único
+    </div>
+  
+    <!-- Gestión de productos -->
+    <div class="menu-section">
+      <div class="menu-title">Gestión de productos</div>
+      <nav class="menu-list">
+        <a class="menu-item" href="/productos/nuevo">
+          <svg class="icon"><use href="#i-plus"/></svg>
+          Crear producto
+        </a>
+        <a class="menu-item" href="/productos/ingreso">
+          <svg class="icon"><use href="#i-clipboard"/></svg>
+          Ingreso Producto
+        </a>
+        <a class="menu-item" href="/productos/desactivar">
+          <svg class="icon"><use href="#i-ban"/></svg>
+          Desactivar Producto
+        </a>
+      </nav>
+    </div>
+  
+    <!-- Gestión de proveedores -->
+    <div class="menu-section">
+      <div class="menu-title">Gestión de proveedores</div>
+      <nav class="menu-list">
+        <a class="menu-item" href="/proveedores/nuevo">
+          <svg class="icon"><use href="#i-plus"/></svg>
+          Crear Proveedor
+        </a>
+        <a class="menu-item" href="/proveedores/desactivar">
+          <svg class="icon"><use href="#i-ban"/></svg>
+          Desactivar proveedor
+        </a>
+      </nav>
+    </div>
+  
+    <!-- Pedidos -->
+    <div class="menu-section">
+      <div class="menu-title">Pedidos</div>
+      <nav class="menu-list">
+        <a class="menu-item" href="/pedidos/generar">
+          <svg class="icon"><use href="#i-clipboard"/></svg>
+          Generar Pedidos
+        </a>
+        <a class="menu-item" href="/pedidos/validar">
+          <svg class="icon"><use href="#i-check"/></svg>
+          Validar Pedido
+        </a>
+        <a class="menu-item" href="/pedidos/sugerencias">
+          <svg class="icon"><use href="#i-box"/></svg>
+          Ver Sugerencia de Ped
+        </a>
+      </nav>
+    </div>
+  
+    <div class="hr"></div>
+  
+    <!-- Perfil -->
+    <div class="profile">
+      <div class="avatar">
+        <!-- Inicial del usuario -->
+        {{ (session.get('user','U')[:1] if session.get('user') else 'U') }}
+      </div>
+      <div>
+        <strong>{{ session.get('user','Usuario') }}</strong>
+        <small>Perfil</small>
+      </div>
+    </div>
+  </aside>
+  
+
+  <!-- Main -->
+  <main>
+    <header>
+      <h2>Dashboard</h2>
+      <div class="user">
+        <form action="/logout" method="post"><button>Cerrar sesión</button></form>
+      </div>
+    </header>
+
+    <!-- KPIs -->
+    <section class="kpis">
+      <article class="card kpi">
+        <h5>Productos en stock</h5>
+        <div class="big" id="kpi_stock">—</div>
+        <div class="muted">Unidades con stock &gt; 0</div>
+        <div class="subvalue" id="kpi_valor">$0</div>
+        <div class="muted">Valor total en inventario</div>
+      </article>
+
+      <article class="card kpi">
+        <h5>Alerta stock bajo</h5>
+        <div class="big" id="kpi_bajo">—</div>
+        <div class="muted">≤ mínimo (5)</div>
+        <div class="subvalue" id="kpi_ventas">$0</div>
+        <div class="muted">Ventas del mes</div>
+      </article>
+
+      <article class="card kpi">
+        <h5>Productos sin stock</h5>
+        <div class="big" id="kpi_cero">—</div>
+        <div class="muted">Unidades con stock = 0</div>
+      </article>
+    </section>
+
+    <!-- Tabla de movimientos -->
+    <section class="grid-1" style="margin-top:40px;">
+      <section class="card">
+        <h3>Últimos movimientos</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Detalle</th>
+              <th>Producto</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>SKU</th>
+            </tr>
+          </thead>
+          <tbody id="tbody_movs"></tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+
+  <!-- Íconos -->
+  <svg width="0" height="0" style="position:absolute;visibility:hidden">
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M20 6L9 17l-5-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+      <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+      <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+      <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+    </symbol>
+  </svg>
+
+  <script>
+  (async function(){
+    const fmtMoney = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v||0);
+
+    // KPIs
+    try{
+      const r1 = await fetch('/api/dashboard/summary');
+      const j1 = await r1.json();
+      if(j1.ok){
+        document.getElementById('kpi_stock').textContent = j1.productos_en_stock;
+        document.getElementById('kpi_bajo').textContent  = j1.alerta_stock_bajo;
+        document.getElementById('kpi_cero').textContent  = j1.sin_stock;
+        document.getElementById('kpi_valor').textContent = fmtMoney(j1.valor_total_stock);
+        document.getElementById('kpi_ventas').textContent= fmtMoney(j1.ventas_mes);
+      }
+    }catch(e){ console.error('Error KPIs', e); }
+
+    // Movimientos
+    try{
+      const r2 = await fetch('/api/dashboard/top-movimientos');
+      const j2 = await r2.json();
+      if(j2.ok){
+        const tbody = document.getElementById('tbody_movs');
+        tbody.innerHTML = '';
+        j2.items.forEach(x=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="idcol">${x.id}</td>
+            <td>${x.producto}</td>
+            <td class="stock">${x.stock ?? ''}</td>
+            <td class="status">
+              ${(x.stock ?? 0) === 0
+                ? '<svg width="20" height="20" class="warn"><use href="#i-alert"/></svg>'
+                : '<svg width="20" height="20" class="ok"><use href="#i-check"/></svg>'}
+            </td>
+            <td class="date"><svg width="18" height="18" style="color:#6b7280"><use href="#i-calendar"/></svg> ${x.fecha}</td>
+            <td class="catcell"><span class="pill">${x.categoria || '—'}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }catch(e){ console.error('Error movimientos', e); }
+  })();
+  </script>
+</body>
+</html>
