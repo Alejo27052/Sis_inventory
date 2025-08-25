@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ingreso de Productos Nuevos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(150deg, #8fa3aa 50%, #6c8085 50%);
+      color: #fff;
+      text-align: center;
+    }
+    h1 { font-size: 2.2em; font-weight: bold; margin: 28px 0 24px; text-transform: uppercase; color: #111; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+    form { max-width: 980px; margin: auto; }
+    .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 0 auto; }
+    .field { display: flex; flex-direction: column; align-items: center; background: #2f3a3d; padding: 15px; border-radius: 15px; color: #e0e0e0; box-shadow: 2px 2px 5px rgba(0,0,0,0.4); width: 220px; }
+    .field label { font-weight: bold; margin-bottom: 8px; }
+    .field input, .field select { width: 100%; padding: 8px; border-radius: 8px; border: none; text-align: center; }
+    .confirm { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 1.1em; margin-top: 20px; color: #222; }
+    .confirm input { transform: scale(1.5); cursor: pointer; }
+    .bottom { display: flex; justify-content: center; gap: 30px; margin-top: 30px; }
+    .bottom button { padding: 12px 30px; font-size: 1em; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; box-shadow: 2px 2px 6px rgba(0,0,0,0.4); }
+    .volver { background: #7b8487; color: #fff; }
+    .guardar { background: #a2a8aa; color: #fff; }
+    .note { margin-top: 18px; font-size: 0.9em; color: #ccc; }
+    .search { margin: 6px auto 16px; display:flex; gap:10px; justify-content:center; align-items:center }
+    .search input{ width:260px; padding:8px; border-radius: 8px; border:0 }
+    ul#resultados{ list-style:none; padding-left:0; margin:8px auto; max-width:980px; text-align:left }
+    ul#resultados li{ padding:6px 8px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,.25) }
+    ul#resultados li:hover{ background:rgba(255,255,255,.08) }
+  </style>
+</head>
+<body>
+  <h1>INGRESO DE PRODUCTOS NUEVOS</h1>
+
+  <!-- búsqueda rápida por SKU o nombre -->
+  <div class="search">
+    <input type="text" id="q" placeholder="Buscar por SKU o nombre…">
+    <button onclick="buscar()">Buscar</button>
+  </div>
+  <ul id="resultados"></ul>
+
+  <form id="frmProd">
+    <div class="container">
+      <div class="field">
+        <label for="sku">SKU (único)</label>
+        <input type="text" id="sku" name="sku" maxlength="30" required>
+      </div>
+
+      <div class="field">
+        <label for="nombre">Nombre del producto</label>
+        <input type="text" id="nombre" name="nombre" maxlength="20" required>
+      </div>
+
+      <div class="field">
+        <label for="factura">Factura de compra</label>
+        <input type="text" id="factura" name="factura">
+      </div>
+
+      <div class="field">
+        <label for="proveedor">Proveedor</label>
+        <select id="proveedor" name="proveedor">
+          <option value="">-- Seleccione proveedor --</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="marca">Marca</label>
+        <input type="text" id="marca" name="marca">
+      </div>
+
+      <div class="field">
+        <label for="productoSel">Seleccione producto</label>
+        <select id="productoSel" name="productoSel">
+          <option value="">-- Seleccione --</option>
+          <option value="Arroz">Arroz</option>
+          <option value="Azúcar">Azúcar</option>
+          <option value="Aceite">Aceite</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="medida">Tipo de medida</label>
+        <select id="medida" name="medida">
+          <option value="">-- Seleccione --</option>
+          <option value="Kg">Kg</option>
+          <option value="Un">Unidades</option>
+          <option value="Lt">Litros</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="cantidad">Cantidad</label>
+        <input type="number" id="cantidad" name="cantidad" min="0" value="0">
+      </div>
+
+      <div class="field">
+        <label for="precio">Precio unitario</label>
+        <input type="number" id="precio" name="precio" min="0" step="0.01" value="0">
+      </div>
+    </div>
+
+    <div class="confirm">
+      <label for="confirmado">Precio confirmado</label>
+      <input type="checkbox" id="confirmado" name="confirmado">
+    </div>
+
+    <div class="bottom">
+      <button type="button" class="volver" onclick="location.href='/dashboard'">Volver</button>
+      <button type="submit" class="guardar">Guardar</button>
+    </div>
+  </form>
+
+  <p class="note">Por favor llenar al menos SKU y Nombre. El resto es opcional.</p>
+
+  <script>
+  // Autollenar nombre desde combo de producto
+  document.getElementById('productoSel').addEventListener('change', e=>{
+    const v = e.target.value;
+    const nombre = document.getElementById('nombre');
+    if(!nombre.value && v){ nombre.value = v; }
+  });
+
+  // Cargar proveedores activos en el select
+  async function cargarProveedores(){
+    const sel = document.getElementById('proveedor');
+    sel.innerHTML = '<option value="">-- Seleccione proveedor --</option>';
+    try{
+      const r = await fetch('/api/proveedores/select');
+      const j = await r.json();
+      if(j.ok){
+        j.items.forEach(p=>{
+          const opt = document.createElement('option');
+          opt.value = p.ID_Proveedor;                 // guardaremos el ID
+          opt.textContent = `${p.Nombre} (${p.NIT})`;
+          sel.appendChild(opt);
+        });
+      }
+    }catch(e){ console.error('Error cargando proveedores', e); }
+  }
+  window.addEventListener('DOMContentLoaded', cargarProveedores);
+
+  // Buscar por q (SKU o nombre) y llenar lista
+  async function buscar(){
+    const q = document.getElementById('q').value.trim();
+    const ul = document.getElementById('resultados');
+    ul.innerHTML = '';
+    const r = await fetch(`/api/productos?q=${encodeURIComponent(q)}`);
+    const j = await r.json();
+    if(j.ok){
+      if(j.items.length === 0){
+        const li = document.createElement('li'); li.style.color='#ddd'; li.textContent='Sin resultados';
+        ul.appendChild(li);
+        return;
+      }
+      j.items.forEach(it=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${it.Nombre}</strong> — ${it.SKU} <small>${it.Precio_Unitario}</small>`;
+        li.onclick = ()=> cargarSKU(it.SKU);
+        ul.appendChild(li);
+      });
+    }
+  }
+
+  async function cargarSKU(sku){
+    const r = await fetch(`/api/productos/${encodeURIComponent(sku)}`);
+    const j = await r.json();
+    if(j.ok && j.found){
+      const it = j.item;
+      document.getElementById('sku').value      = it.SKU;
+      document.getElementById('nombre').value   = it.Nombre || '';
+      document.getElementById('precio').value   = it.Precio_Unitario || 0;
+      document.getElementById('cantidad').value = it.Stock || 0;
+
+      // Si guardaste Descripción como JSON, intenta leer proveedor y extras
+      try{
+        const d = JSON.parse(it.Descripcion || '{}');
+        document.getElementById('factura').value   = d.factura || '';
+        document.getElementById('marca').value     = d.marca || '';
+        document.getElementById('medida').value    = d.medida || '';
+        document.getElementById('confirmado').checked = !!d.confirmado;
+        if(d.proveedor) document.getElementById('proveedor').value = String(d.proveedor);
+      }catch(_){/* descripción no era JSON, ignorar */}
+      window.scrollTo({top:document.getElementById('frmProd').offsetTop-10, behavior:'smooth'});
+    }
+  }
+
+  // Guardar (crea si no existe; actualiza si ya existe por SKU)
+  document.getElementById('frmProd').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const sku    = document.getElementById('sku').value.trim();
+    const nombre = document.getElementById('nombre').value.trim();
+    const precio = parseFloat(document.getElementById('precio').value || 0);
+    const stock  = parseInt(document.getElementById('cantidad').value || 0);
+    const proveedorId = document.getElementById('proveedor').value || null;
+
+    if(!sku || !nombre){ alert('SKU y Nombre son obligatorios'); return; }
+
+    // empaquetamos extras en Descripción (incluye ID_Proveedor)
+    const desc = JSON.stringify({
+      factura:   document.getElementById('factura').value.trim(),
+      proveedor: proveedorId,    // ID_Proveedor
+      marca:     document.getElementById('marca').value.trim(),
+      medida:    document.getElementById('medida').value,
+      confirmado: document.getElementById('confirmado').checked
+    });
+
+    // ¿existe?
+    const chk = await fetch(`/api/productos/${encodeURIComponent(sku)}`);
+    const cj = await chk.json();
+
+    const payload = {
+      sku, nombre, descripcion: desc,
+      precio_unitario: precio, stock: stock,
+      estado: "Activo", id_categoria: null
+    };
+
+    if(cj.ok && cj.found){
+      // UPDATE
+      const up = await fetch(`/api/productos/${encodeURIComponent(sku)}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const uj = await up.json();
+      if(uj.ok){ alert('Producto actualizado'); }
+      else{ alert(uj.error || 'No se pudo actualizar'); }
+    }else{
+      // CREATE
+      const cr = await fetch('/api/productos', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const cj2 = await cr.json();
+      if(cj2.ok){ alert('Producto creado'); }
+      else{ alert(cj2.error || 'No se pudo crear'); }
+    }
+  });
+  </script>
+</body>
+</html>
