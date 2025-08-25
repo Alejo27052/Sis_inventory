@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Proveedores</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      width: 600px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      padding-bottom: 70px;
+    }
+
+    /* ---------- LISTA DE PROVEEDORES ---------- */
+    .view {
+      display: none;
+      padding: 20px;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .header {
+      background-color: #4db5ff;
+      color: white;
+      padding: 15px 20px;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      margin-top: 20px;
+      padding: 8px 10px;
+      background: white;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .search-box button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .search-box button img {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Botón flotante */
+    .btn-add {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      background-color: #4db5ff;
+      border: none;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-add span {
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .btn-add:hover {
+      background-color: #3aa8f7;
+    }
+
+    /* ---------- FORMULARIO DE PROVEEDOR ---------- */
+    .form-container h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-container h2::before {
+      content: "✏️ ";
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="number"], input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 20px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .contacto {
+      text-align: center;
+      margin: 15px 0 10px;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .btn-cancel {
+      background-color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-save {
+      background-color: #4db5ff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn-save:hover {
+      background-color: #3aa8f7;
+    }
+
+    .btn-cancel:hover {
+      background-color: #d5d5d5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Vista de lista de proveedores -->
+    <div id="listaProveedores" class="view active">
+      <div class="header">
+        Proveedores
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" width="28" alt="Icono lista">
+      </div>
+
+      <div class="search-box">
+        <input type="text" placeholder="Buscar por nombre, NIT y/o número de documento...">
+        <button><img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Buscar"></button>
+      </div>
+
+      <!-- Botón para agregar -->
+      <button class="btn-add" onclick="mostrarFormulario()">
+        <span>+</span>
+      </button>
+    </div>
+
+    <!-- Vista de formulario nuevo proveedor -->
+    <div id="formularioProveedor" class="view">
+      <div class="form-container">
+        <h2>Nuevo Proveedor</h2>
+
+        <form>
+          <label for="nit">NIT o Número de documento:</label>
+          <input type="text" id="nit" name="nit" placeholder="Ej: 900234567" required>
+
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" required>
+
+          <div class="contacto">📞 Contacto</div>
+
+          <label for="telefono">Teléfono:</label>
+          <input type="text" id="telefono" name="telefono">
+
+          <label for="correo">Correo electrónico:</label>
+          <input type="email" id="correo" name="correo">
+
+          <div class="buttons">
+            <button type="button" class="btn-cancel" onclick="mostrarLista()">Cancelar</button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function mostrarFormulario() {
+      document.getElementById("listaProveedores").classList.remove("active");
+      document.getElementById("formularioProveedor").classList.add("active");
+    }
+
+    function mostrarLista() {
+      document.getElementById("formularioProveedor").classList.remove("active");
+      document.getElementById("listaProveedores").classList.add("active");
+    }
+  </script>
+</body>
+</html>
