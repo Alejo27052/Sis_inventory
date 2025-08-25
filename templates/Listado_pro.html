@@ -1,232 +1,224 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Gestión de Proveedores</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proveedores – Súper Único</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root{ --bg:#f6f7f2; --card:#fff; --ink:#17261a; --muted:#6b7280;
+           --primary:#2e7d32; --ring:#9ad17f; --radius:16px; --shadow:0 10px 28px rgba(20,48,28,.10); }
+    *{ box-sizing:border-box }
+    body{
+      margin:0; font-family:"Inter",system-ui,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+      background:
+        radial-gradient(1100px 520px at 15% -10%, #e9f4e5 0%, transparent 60%),
+        radial-gradient(900px 460px at 95% 10%, #fff4d8 0%, transparent 55%),
+        var(--bg);
+      min-height:100vh; padding:16px;
     }
+    .layout{ width:min(1400px, 96vw); margin:0 auto; display:grid; gap:18px; grid-template-columns: 1.1fr .9fr }
+    @media (max-width:980px){ .layout{ grid-template-columns: 1fr } }
 
-    .container {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      width: 600px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      position: relative;
-      padding-bottom: 70px;
+    h2{ margin:6px 0 0 0 }
+    .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px }
+    .search-bar{ display:flex; gap:8px; align-items:center; margin-bottom:10px }
+    .search-box{ flex:1; display:flex; gap:8px }
+    .search-box input{
+      flex:1; padding:12px; border-radius:12px; border:1.5px solid #dfe5df; background:#f9fbf7; font-size:16px;
+      outline:none; transition:border .2s, box-shadow .2s;
     }
+    .search-box input:focus{ border-color:var(--primary); box-shadow:0 0 0 4px var(--ring); background:#fff }
+    .btn{
+      appearance:none; border:0; border-radius:12px; padding:12px 16px; cursor:pointer; font-weight:800;
+      background:#eef7e9; border:1.5px solid #d7ecd2; color:#1b5e20;
+    }
+    ul#resultados{ list-style:none; padding-left:0; margin:10px 0 0 0; }
+    ul#resultados li{ padding:8px 6px; border-bottom:1px solid #eef1ee; cursor:pointer }
+    ul#resultados li:hover{ background:#f7fbf6 }
 
-    /* ---------- LISTA DE PROVEEDORES ---------- */
-    .view {
-      display: none;
-      padding: 20px;
+    .grid{ display:grid; gap:12px }
+    .row{ display:grid; gap:12px }
+    @media (min-width:760px){ .row{ grid-template-columns:1fr 1fr } }
+    label{ font-size:12px; color:var(--muted) }
+    input[type="text"], input[type="email"]{
+      width:100%; padding:12px; border-radius:12px; border:1.5px solid #dfe5df; background:#f9fbf7; font-size:16px;
+      outline:none; transition:border .2s, box-shadow .2s;
     }
-
-    .view.active {
-      display: block;
-    }
-
-    .header {
-      background-color: #4db5ff;
-      color: white;
-      padding: 15px 20px;
-      font-size: 22px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 12px 12px 0 0;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-      margin-top: 20px;
-      padding: 8px 10px;
-      background: white;
-    }
-
-    .search-box input {
-      border: none;
-      outline: none;
-      flex: 1;
-      font-size: 14px;
-    }
-
-    .search-box button {
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .search-box button img {
-      width: 18px;
-      height: 18px;
-    }
-
-    /* Botón flotante */
-    .btn-add {
-      position: absolute;
-      bottom: 15px;
-      right: 20px;
-      background-color: #4db5ff;
-      border: none;
-      border-radius: 50%;
-      width: 55px;
-      height: 55px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .btn-add span {
-      color: white;
-      font-size: 32px;
-      font-weight: bold;
-    }
-
-    .btn-add:hover {
-      background-color: #3aa8f7;
-    }
-
-    /* ---------- FORMULARIO DE PROVEEDOR ---------- */
-    .form-container h2 {
-      font-size: 20px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .form-container h2::before {
-      content: "✏️ ";
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
-
-    input[type="text"], input[type="number"], input[type="email"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #aaa;
-      border-radius: 20px;
-      outline: none;
-      box-sizing: border-box;
-    }
-
-    .contacto {
-      text-align: center;
-      margin: 15px 0 10px;
-      font-weight: bold;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-
-    .btn-cancel {
-      background-color: #e0e0e0;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .btn-save {
-      background-color: #4db5ff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-    }
-
-    .btn-save:hover {
-      background-color: #3aa8f7;
-    }
-
-    .btn-cancel:hover {
-      background-color: #d5d5d5;
-    }
+    input:focus{ border-color:var(--primary); box-shadow:0 0 0 4px var(--ring); background:#fff }
+    .switch{ display:flex; align-items:center; gap:10px; margin-top:4px }
+    .switch input{ accent-color:var(--primary) }
+    .actions{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap }
+    .title-small{ font-size:13px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.7px; margin:0 0 8px 0 }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Vista de lista de proveedores -->
-    <div id="listaProveedores" class="view active">
-      <div class="header">
-        Proveedores
-        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" width="28" alt="Icono lista">
-      </div>
-
-      <div class="search-box">
-        <input type="text" placeholder="Buscar por nombre, NIT y/o número de documento...">
-        <button><img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Buscar"></button>
-      </div>
-
-      <!-- Botón para agregar -->
-      <button class="btn-add" onclick="mostrarFormulario()">
-        <span>+</span>
-      </button>
+  <header style="width:min(1400px,96vw); margin:0 auto 10px auto; display:flex; justify-content:space-between; align-items:center">
+    <h2>Proveedores</h2>
+    <div>
+      <a class="btn" href="/proveedores/nuevo">+ Crear proveedor</a>
+      <a class="btn" href="/dashboard">Dashboard</a>
     </div>
+  </header>
 
-    <!-- Vista de formulario nuevo proveedor -->
-    <div id="formularioProveedor" class="view">
-      <div class="form-container">
-        <h2>Nuevo Proveedor</h2>
+  <main class="layout">
+    <!-- LISTADO / BÚSQUEDA -->
+    <section class="card" id="listaProveedores">
+      <p class="title-small">Listado / búsqueda</p>
+      <div class="search-bar">
+        <div class="search-box">
+          <input type="text" placeholder="Buscar por NIT o Nombre…" />
+          <button class="btn" type="button">Buscar</button>
+        </div>
+      </div>
+      <ul id="resultados"></ul>
+      <p style="color:#6b7280;margin-top:10px">Tip: escribe al menos 2 caracteres para ver resultados.</p>
+    </section>
 
-        <form>
-          <label for="nit">NIT o Número de documento:</label>
-          <input type="text" id="nit" name="nit" placeholder="Ej: 900234567" required>
-
-          <label for="nombre">Nombre:</label>
-          <input type="text" id="nombre" name="nombre" required>
-
-          <div class="contacto">📞 Contacto</div>
-
-          <label for="telefono">Teléfono:</label>
-          <input type="text" id="telefono" name="telefono">
-
-          <label for="correo">Correo electrónico:</label>
-          <input type="email" id="correo" name="correo">
-
-          <div class="buttons">
-            <button type="button" class="btn-cancel" onclick="mostrarLista()">Cancelar</button>
-            <button type="submit" class="btn-save">Guardar</button>
+    <!-- FORMULARIO -->
+    <section class="card" id="formularioProveedor">
+      <p class="title-small">Editar / Crear proveedor</p>
+      <form id="formProv" class="grid" onsubmit="return guardarProveedor(event)">
+        <div class="row">
+          <div>
+            <label for="nit">NIT (máx. 15) *</label>
+            <input id="nit" name="nit" type="text" maxlength="15" required />
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
+          <div>
+            <label for="nombre">Nombre (máx. 50) *</label>
+            <input id="nombre" name="nombre" type="text" maxlength="50" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="telefono">Teléfono (máx. 10)</label>
+            <input id="telefono" name="telefono" type="text" maxlength="10" />
+          </div>
+          <div>
+            <label for="email">Email (máx. 100)</label>
+            <input id="email" name="email" type="email" maxlength="100" />
+          </div>
+        </div>
+
+        <div>
+          <label for="direccion">Dirección (máx. 30)</label>
+          <input id="direccion" name="direccion" type="text" maxlength="30" />
+        </div>
+
+        <div class="switch">
+          <input id="estado" name="estado" type="checkbox" checked />
+          <label for="estado">Proveedor activo</label>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="button" onclick="limpiarForm()">Limpiar</button>
+          <button class="btn" type="submit">Guardar</button>
+        </div>
+      </form>
+    </section>
+  </main>
 
   <script>
-    function mostrarFormulario() {
-      document.getElementById("listaProveedores").classList.remove("active");
-      document.getElementById("formularioProveedor").classList.add("active");
+  // Mostrar/ocultar (si quieres alternar a pantalla completa)
+  function mostrarFormulario(){ document.getElementById("listaProveedores").classList.remove("active"); }
+  function mostrarLista(){ document.getElementById("listaProveedores").classList.add("active"); }
+
+  function limpiarForm(){
+    ['nit','nombre','telefono','direccion','email'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('estado').checked = true;
+  }
+
+  // --- Búsqueda y listado
+  const qInput = document.querySelector('#listaProveedores .search-box input');
+  const resultados = document.getElementById('resultados');
+
+  async function buscar() {
+    const q = (qInput.value || '').trim();
+    resultados.innerHTML = '';
+    const resp = await fetch(`/api/proveedores?q=${encodeURIComponent(q)}`);
+    const data = await resp.json();
+    if (!data.ok) return;
+
+    if (data.items.length === 0){
+      const li = document.createElement('li');
+      li.style.color = '#6b7280';
+      li.textContent = 'Sin resultados';
+      resultados.appendChild(li);
+      return;
     }
 
-    function mostrarLista() {
-      document.getElementById("formularioProveedor").classList.remove("active");
-      document.getElementById("listaProveedores").classList.add("active");
+    data.items.forEach(it=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${it.Nombre}</strong> — ${it.NIT} <small style="color:#6b7280">${it.Email || ''}</small>`;
+      li.addEventListener('click', ()=> cargarEnFormulario(it.NIT));
+      resultados.appendChild(li);
+    });
+  }
+  qInput.addEventListener('input', () => { if(qInput.value.length >= 2) buscar(); });
+  document.querySelector('#listaProveedores .search-box button').addEventListener('click', buscar);
+
+  // --- Cargar en formulario por NIT
+  async function cargarEnFormulario(nit){
+    const r = await fetch(`/api/proveedores/${encodeURIComponent(nit)}`);
+    const j = await r.json();
+    if(j.ok && j.found){
+      const it = j.item;
+      document.getElementById('nit').value       = it.NIT;
+      document.getElementById('nombre').value    = it.Nombre || '';
+      document.getElementById('telefono').value  = it.Telefono || '';
+      document.getElementById('direccion').value = it.Direccion || '';
+      document.getElementById('email').value     = it.Email || '';
+      document.getElementById('estado').checked  = parseInt(it.Estado ?? 1) === 1;
+      window.scrollTo({ top: document.getElementById('formularioProveedor').offsetTop - 10, behavior:'smooth' });
     }
+  }
+
+  // --- Guardar (create si no existe; update si ya existe)
+  async function guardarProveedor(ev){
+    ev.preventDefault();
+    const nit       = document.getElementById('nit').value.trim();
+    const nombre    = document.getElementById('nombre').value.trim();
+    const telefono  = document.getElementById('telefono').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const estado    = document.getElementById('estado').checked ? 1 : 0;
+
+    if(!nit || !nombre){ alert("NIT y Nombre son obligatorios"); return false; }
+
+    const g = await fetch(`/api/proveedores/${encodeURIComponent(nit)}`);
+    const gj = await g.json();
+
+    if(gj.ok && gj.found){
+      // UPDATE
+      const up = await fetch(`/api/proveedores/${encodeURIComponent(nit)}`, {
+        method: "PUT",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ nombre, telefono, direccion, email, estado })
+      });
+      const uj = await up.json();
+      if(uj.ok){ alert("Proveedor actualizado"); buscar(); }
+      else{ alert(uj.error || "No se pudo actualizar"); }
+    }else{
+      // CREATE
+      const cr = await fetch("/api/proveedores", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ nit, nombre, telefono, direccion, email, estado })
+      });
+      const cj = await cr.json();
+      if(cj.ok){ alert("Proveedor creado"); buscar(); }
+      else{ alert(cj.error || "No se pudo crear"); }
+    }
+    return false;
+  }
+
+  // Primera carga
+  buscar();
   </script>
 </body>
 </html>
